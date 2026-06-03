@@ -6,8 +6,8 @@ import {
 import { 
   DarkMode, LightMode, Add, Delete, Edit, Check, Close, Palette, Settings as SettingsIcon 
 } from "@mui/icons-material";
-import { useSettings, ACCENT_PRESETS } from "../lib/settings" // Asegúrate que esta ruta exista
-import { toast } from "sonner"; // Puedes mantener sonner o pasar a Snackbar de MUI
+import { useSettings, ACCENT_PRESETS } from "../lib/settings";
+import { toast } from "sonner";
 
 export function SettingsPage() {
   const s = useSettings();
@@ -24,10 +24,15 @@ export function SettingsPage() {
   return (
     <Stack spacing={4} sx={{ maxWidth: 800 }}>
       <Box>
-        <Typography variant="h4" fontWeight="600">Configuración</Typography>
-        <Typography color="text.secondary">Personalizá la apariencia y los vendedores</Typography>
-      </Box>
+  <Typography variant="h4" fontWeight="600" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+    <SettingsIcon />
+    Configuración
+  </Typography>
 
+  <Typography color="text.secondary">
+    Personalizá la apariencia y los vendedores
+  </Typography>
+</Box>
       {/* Apariencia */}
       <Card sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>Apariencia</Typography>
