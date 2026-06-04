@@ -43,7 +43,7 @@ export function SaleDetailModal({ sale, onOpenChange }: Props) {
           <Stack spacing={3}>
 
             {/* INFO HEADER */}
-            <Grid container spacing={2}>
+            <Grid container spacing={2} pr={4}>
               <Grid item xs={12} md={4}>
                 <Paper sx={{ p: 2 }}>
                   <Box sx={{ display: "flex", gap: 1.5 }}>

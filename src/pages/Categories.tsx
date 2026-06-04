@@ -16,6 +16,8 @@ import {
   Paper,
 } from "@mui/material";
 
+import { ConfirmDialog } from "../components/ConfirmDialog";
+
 import {
   Add,
   Delete,
@@ -31,6 +33,9 @@ import { toast } from "sonner";
 export function Categories() {
   const { categories, products, addCategory, deleteCategory } = useStore();
 
+  const [categoryToDelete, setCategoryToDelete] =
+  useState<string | null>(null);
+
   const [name, setName] = useState("");
   const [openCat, setOpenCat] = useState<string | null>(null);
 
@@ -44,21 +49,36 @@ export function Categories() {
     };
   });
 
-  const add = () => {
-    const v = name.trim();
-    if (!v) return;
+  const add = async () => {
+  const v = name.trim();
+  if (!v) return;
 
-    addCategory(v);
+  const toastId = toast.loading("Creando categoría...");
+
+  try {
+    await addCategory(v);
+
+    toast.success("Categoría creada correctamente", {
+      id: toastId,
+    });
+
     setName("");
-    toast.success("Categoría creada");
-  };
+  } catch {
+    toast.error("Error al crear categoría", {
+      id: toastId,
+    });
+  }
+};
 
-  const remove = (name: string) => {
-    if (window.confirm(`¿Eliminar categoría "${name}"?`)) {
-      deleteCategory(name);
-      toast.success("Categoría eliminada");
-    }
-  };
+ const confirmDeleteCategory = () => {
+  if (!categoryToDelete) return;
+
+  deleteCategory(categoryToDelete);
+
+  toast.success("Categoría eliminada");
+
+  setCategoryToDelete(null);
+};
 
   const selectedProducts =
     openCat ? products.filter((p) => p.categoria === openCat) : [];
@@ -134,7 +154,7 @@ export function Categories() {
 
                 <IconButton
                   color="error"
-                  onClick={() => remove(c.name)}
+                  onClick={() => setCategoryToDelete(c.name)}
                 >
                   <Delete />
                 </IconButton>
@@ -240,6 +260,20 @@ export function Categories() {
           </Button>
         </DialogActions>
       </Dialog>
+
+
+ {/* DELETE CONFIRMATION */}
+  <ConfirmDialog
+  open={!!categoryToDelete}
+  title="Eliminar categoría"
+  description={`¿Estás seguro de eliminar "${categoryToDelete}"?`}
+  onClose={() => setCategoryToDelete(null)}
+  onConfirm={confirmDeleteCategory}
+/>
+
+
+
     </Box>
   );
+
 }

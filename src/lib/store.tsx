@@ -105,28 +105,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   `);
 
  if (ventas) {
-  const mappedSales = ventas.map((v: any) => {
-
-    console.log("Datos crudos de esta venta:", v);
-
-    return {
-      
-      id: v.id,
-      // Nos aseguramos de leer la fecha correctamente
-      fecha: v.fecha ? v.fecha : new Date().toISOString(),
-      vendedor: v.vendedor,
-      // Importante: usamos el nombre de columna REAL de tu tabla de Supabase
-      metodoPago: v.metodo_pago, 
-      total: v.total,
-      items: v.items_venta ? v.items_venta.map((i: any) => ({
-        productId: i.producto_id,
-        nombre: i.nombre,
-        cantidad: i.cantidad,
-        precio: i.precio
-      })) : []
-    }; 
-    });
+const mappedSales = ventas.map((v: any) => {
+  return {
+    id: v.id,
+    fecha: v.created_at,
+    vendedor: v.vendedor,
+    metodoPago: v.metodo_pago,
+    total: v.total,
+    items: v.items_venta.map((i: any) => ({
+      productId: i.producto_id,
+      nombre: i.nombre,
+      cantidad: i.cantidad,
+      precio: i.precio,
+    })),
+  };
+});
   setState((s) => ({ ...s, sales: mappedSales }));
+
+  
 }
 
 if (productos) {
@@ -155,13 +151,14 @@ if (productos) {
   }, []);
 
   const addCategory = useCallback(async (name: string) => {
-    const {error} = await supabase.from('categorias').insert([{ nombre: name }]);
-    if (!error) {
-      setState((s: any) => s.categories.includes(name) ? s : ({ ...s, categories: [...s.categories, name] }));
-    }else {
-        console.error("Error al agregar categoría:", error);
- }  
-  }, []);
+  const { error } = await supabase
+    .from("categorias")
+    .insert([{ nombre: name }]);
+
+  if (error) throw error;
+
+  setState(s => ({ ...s, categories: [...s.categories, name] }));
+}, []);
 
   const deleteCategory = useCallback(async (name: string) => {
   // Primero borramos de Supabase
@@ -248,8 +245,19 @@ if (productos) {
   const { error: iError } = await supabase.from('items_venta').insert(itemsConId);
   
   if (!iError) {
-    setState((st: any) => ({ ...st, sales: [{ ...venta, items: s.items }, ...st.sales] }));
-  }
+  const nuevaVenta = {
+    id: venta.id,
+    fecha: venta.created_at,
+    vendedor: venta.vendedor,
+    metodoPago: venta.metodo_pago,
+    total: venta.total,
+    items: s.items,
+  };
+  setState((st) => ({
+    ...st,
+    sales: [nuevaVenta, ...st.sales],
+  }));
+}
 }, []);
  
 

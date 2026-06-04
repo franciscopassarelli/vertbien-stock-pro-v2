@@ -9,6 +9,7 @@ import App from "./App";
 import { AuthProvider } from "./lib/auth"; 
 import { SettingsProvider } from "./lib/settings";
 import { StoreProvider } from "./lib/store";
+import { Toaster } from "sonner";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <StoreProvider>
             <AppThemeProvider>
               <CssBaseline />
+              <Toaster richColors position="top-right" />
               <App />
             </AppThemeProvider>
           </StoreProvider>

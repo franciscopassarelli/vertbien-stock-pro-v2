@@ -48,6 +48,7 @@ export function SalesPage() {
   ] as const;
 
   const filteredSales = useMemo(() => {
+    
     let list = sales;
 
     if (range !== "all") {
@@ -66,6 +67,8 @@ export function SalesPage() {
 
     return list;
   }, [sales, range, vendor, method]);
+
+  console.log("SALES", sales);
 
   const totalRange = filteredSales.reduce((a, s) => a + s.total, 0);
   const ticketAvg = filteredSales.length

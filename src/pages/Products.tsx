@@ -7,6 +7,7 @@ import { Add, Edit, Delete, Inventory } from "@mui/icons-material";
 import { useStore, Product, getStockState } from "../lib/store"; // Asegúrate de esta ruta
 import { ProductModal } from "../components/ProductModal"; // Asegúrate de esta ruta
 import { toast } from "sonner";
+import {ConfirmDialog} from "../components/ConfirmDialog";
 
 export function ProductsPage() {
   const { products, deleteProduct } = useStore();
@@ -17,6 +18,8 @@ export function ProductsPage() {
   const filtered = products.filter((p) =>
     p.nombre.toLowerCase().includes(q.toLowerCase()) || p.categoria.toLowerCase().includes(q.toLowerCase())
   );
+
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", p: 3 }}>
@@ -122,8 +125,7 @@ export function ProductsPage() {
           <IconButton
             color="error"
             onClick={() => {
-              deleteProduct(p.id);
-              toast.success("Producto eliminado");
+              setProductToDelete(p);
             }}
           >
             <Delete />
@@ -151,6 +153,22 @@ export function ProductsPage() {
         </TableContainer>
       </Paper>
       <ProductModal open={open} onOpenChange={setOpen} editing={editing} />
-    </Box>
+
+    <ConfirmDialog
+      open={!!productToDelete}
+      title="Eliminar producto"
+      description={`¿Eliminar el producto "${productToDelete?.nombre}"? Esta acción no se puede deshacer.`}
+      onClose={() => setProductToDelete(null)}
+      onConfirm={() => {
+        if (productToDelete) {
+          deleteProduct(productToDelete.id);
+          toast.success("Producto eliminado");
+        }
+        setProductToDelete(null); 
+      }}
+      />
+
+      </Box>
+
   );
 }
